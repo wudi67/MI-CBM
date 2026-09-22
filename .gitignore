@@ -1,0 +1,17 @@
+# Experiment results and generated figures are not part of the repository
+outputs/
+figures/
+
+# Caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+tmp/
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
