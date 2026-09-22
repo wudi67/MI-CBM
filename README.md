@@ -40,8 +40,8 @@ MI-CBM/
 ```
 
 The model is `GroupedDynamicVQC` in `experiments/grouped_dynamic_vqc/model.py`.
-Each experiment package contains `scripts/{launch,run,status,check}.sh` and a
-README (in Chinese) that documents its protocol and command-line options.
+Each experiment package contains `scripts/{launch,run,status,check}.sh`;
+`bash experiments/<package>/scripts/run.sh --help` lists the options of a stage.
 
 ## Installation
 
@@ -69,8 +69,11 @@ Run every command from the repository root.
 `data/dsprites/confirmatory_2027/` holds the task used in the paper: 36,549
 binary 32×32 images from dSprites with concepts shape (3 values) and scale
 (6 values), and the label `(shape == heart) XOR (scale > 2)` (`compact_c`).
-`compact_a` has the same images with an 18-class label and is needed only by
-the audit. Identical images never cross the 70/15/15 split.
+The images are all shapes and scales, every fifth orientation and every second
+x- and y-position of dSprites, max-pooled from 64×64 to 32×32; images whose
+pooled raster occurs with different concept values are removed, and identical
+images never cross the 70/15/15 split. `compact_a` has the same images with an
+18-class label and is needed only by the audit.
 
 Before training, run the audit. It writes the admission file that the training
 code checks:
@@ -94,12 +97,17 @@ python scripts/make_dsprites_confirmatory.py \
 ### Robot
 
 `data/robot/` holds 30,720 grayscale 32×32 images of 7,680 robots, each
-rendered four times, with five binary concepts. The split (18,432 / 6,144 /
-6,144) is grouped by robot identity. The data were generated with the Robot
-Classification benchmark of Skirzynski et al.
+rendered four times, and one CSV per split. Each image has five binary
+concepts: `head_shape` (square/round), `body_shape` (square/round),
+`has_antennae` (no/yes), `ears_shape` (square/triangle) and `foot_shape`
+(flat/pointy). The label is drawn with probability
+`sigmoid(8.4 * score)`, where
+`score = 5*body + 4*foot + 3*antennae + 2*head + ears - 7.5`, so it is
+nearly deterministic. The split (18,432 / 6,144 / 6,144) is grouped by robot
+identity (`robot_id`) and stratified by label. The data were generated with the
+Robot Classification benchmark of Skirzynski et al.
 (<https://github.com/ustunb/concept-benchmark>); `python data/robot/make_dataset.py`
-regenerates them and needs the `concept_benchmark` package. See
-`data/robot/DATASET.md` for details.
+regenerates them and needs the `concept_benchmark` package.
 
 ## Reproducing the paper
 
